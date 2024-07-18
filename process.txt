@@ -6,3 +6,18 @@ setup the models,
 I am having problems in association
 
 I am using require now, because all codes are using require
+
+Ok so Have done the work of this, and everything till now is working fine
+Now work on migrations
+
+npx sequelize-cli migration:generate --name create-users
+npx sequelize-cli migration:generate --name create-posts
+npx sequelize-cli migration:generate --name create-comments
+
+I will test these migrations on kwanso laptop, also I have to add controllers and routes logic here as well, along with authentication, I will refer to mern-auth project
+
+Now let's think about migrations
+
+created migration, test them in kwanso laptop using 
+npx sequelize-cli db:migrate
+
