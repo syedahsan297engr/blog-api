@@ -1,12 +1,15 @@
-import express from 'express';
+import express from "express";
+import { checkConnection } from "./utils/checkConnection.js";
 
 const app = express();
-const port = 3000;
+const PORT = 3000;
 
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+checkConnection().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
