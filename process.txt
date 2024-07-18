@@ -1,3 +1,8 @@
 Initialize GitHub Here, and then make it to the main branch
 
 setup the folder structure.
+
+setup the models, 
+I am having problems in association
+
+I am using require now, because all codes are using require

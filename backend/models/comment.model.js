@@ -1,29 +1,57 @@
-// models/comment.js
+"use strict";
+const { Model } = require("sequelize");
 
-import { DataTypes } from "sequelize";
-import sequelize from "./sequelize.js"; // Adjust path as needed
+module.exports = (sequelize, DataTypes) => {
+  class Comment extends Model {
+    static associate(models) {
+      Comment.belongsTo(models.User, { foreignKey: "user_id" });
+      Comment.belongsTo(models.Post, { foreignKey: "post_id" });
+    }
+  }
 
-const Comment = sequelize.define("Comment", {
-  comment_id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  content: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
-  parent_comment_id: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
-  },
-});
+  Comment.init(
+    {
+      comment_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      parent_comment_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "User",
+          key: "user_id",
+        },
+      },
+      post_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "Post",
+          key: "post_id",
+        },
+      },
+    },
+    {
+      sequelize,
+      paranoid: true,
+      freezeTableName: true,
+      modelName: "Comment",
+    }
+  );
 
-// Comment.belongsTo(sequelize.models.User, { foreignKey: "user_id" });
-// Comment.belongsTo(sequelize.models.Post, { foreignKey: "post_id" });
-
-export default Comment;
+  return Comment;
+};

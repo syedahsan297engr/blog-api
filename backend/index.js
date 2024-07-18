@@ -1,5 +1,5 @@
-import express from "express";
-import { checkConnection } from "./utils/checkConnection.js";
+const express = require("express");
+const { checkConnection } = require("./utils/checkConnection.js");
 
 const app = express();
 const PORT = 3000;
