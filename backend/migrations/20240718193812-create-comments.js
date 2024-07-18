@@ -50,7 +50,7 @@ module.exports = {
     });
   },
 
-  down: async (queryInterface) => {
+  down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Comment");
   },
 };
