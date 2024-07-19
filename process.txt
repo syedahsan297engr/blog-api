@@ -1,6 +1,9 @@
 Initialize GitHub Here, and then make it to the main branch
 
 setup the folder structure.
+npm run dev will start the server in development mode
+npm start will start the server in production mode
+
 
 setup the models, 
 I am having problems in association
@@ -21,3 +24,41 @@ Now let's think about migrations
 created migration, test them in kwanso laptop using 
 npx sequelize-cli db:migrate
 
+Changes db.config.js for migration purposes
+
+Now for migration purposes add this to your package in scripts
+"db:migrate": "npx sequelize-cli db:migrate --config backend/config/db.config.js"
+Initialize as npx sequelize-cli init, after running this seeders folder is created and config.json as well
+
+The seeders folder in a Sequelize project is used to store seed files, which are scripts for populating the database with initial data or test data. Seeding is the process of adding initial records to your database tables, which can be useful for setting up the database with required default values or for testing purposes.
+
+index file is also created in the models folder as well.
+
+Then run as npm run db:migrate
+
+Ok so migration is working fine, now change your configurations to actual db
+
+Now I will make controllers and routes also add authentication
+
+pull request process
+cd repository-name
+git checkout -b your-branch-name
+git add .
+git commit -m "Description of the changes you made"
+git push origin your-branch-name
+
+Make a separate authentication and error handling logic in utils section
+Then middleware and other work, today work on authentication and jwt.
+
+Sign in Sign up Completed, Now for comments and posts 
+
+Done with sample controllers and routes implementation alongwith authentication, Now let's test this in postman
+In you postman workspace set authorization to bearer token and so, this token should be the one that is generated after user sign in.
+
+Implementation of Post working fine
+Implementation of Comments Working fine
+
+
+This was the basic CRUD just to check jwt working, will add according to the application later.
+
+Also make a readme file as well
