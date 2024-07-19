@@ -62,3 +62,13 @@ Implementation of Comments Working fine
 This was the basic CRUD just to check jwt working, will add according to the application later.
 
 Also make a readme file as well
+
+How to create a fork
+git remote -v
+
+git fetch upstream
+git push upstream ahsan-kwanso
+
+Go to your github account and create a pull request there
+
+Now adding middleware for errors, make sure to first add that in index.js file then use that errorhandler from utils

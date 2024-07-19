@@ -1,7 +1,7 @@
 const db = require("../models/sequelize.js");
-
+const errorHandler = require("../utils/error.js");
 // Create a new comment
-const createComment = async (req, res) => {
+const createComment = async (req, res, next) => {
   const { title, content, post_id, parent_comment_id } = req.body;
   const { user_id } = req.user; // Extract user_id from authenticated user
 
@@ -13,41 +13,41 @@ const createComment = async (req, res) => {
       post_id,
       parent_comment_id,
     });
-    res.status(201).json(comment);
+    return res.status(201).json(comment);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return next(errorHandler(500, "Internal server error"));
   }
 };
 
 // Get all comments for a specific post
-const getCommentsByPostId = async (req, res) => {
+const getCommentsByPostId = async (req, res, next) => {
   const { post_id } = req.params;
 
   try {
     const comments = await db.Comment.findAll({ where: { post_id } });
-    res.status(200).json(comments);
+    return res.status(200).json(comments);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return next(errorHandler(500, "Internal server error"));
   }
 };
 
 // Get a single comment by ID
-const getCommentById = async (req, res) => {
+const getCommentById = async (req, res, next) => {
   const { comment_id } = req.params;
 
   try {
     const comment = await db.Comment.findByPk(comment_id);
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return next(errorHandler(404, "Comment not Found"));
     }
-    res.status(200).json(comment);
+    return res.status(200).json(comment);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return next(errorHandler(500, "Internal server error"));
   }
 };
 
 // Update a comment
-const updateComment = async (req, res) => {
+const updateComment = async (req, res, next) => {
   const { comment_id } = req.params;
   const { title, content } = req.body;
   const { user_id } = req.user;
@@ -55,40 +55,40 @@ const updateComment = async (req, res) => {
   try {
     const comment = await db.Comment.findByPk(comment_id);
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return next(errorHandler(404, "Comment not Found"));
     }
     if (comment.user_id !== user_id) {
-      return res.status(403).json({ message: "Forbidden" });
+      return next(errorHandler(403, "ForBidden"));
     }
 
     comment.title = title || comment.title;
     comment.content = content || comment.content;
     await comment.save();
 
-    res.status(200).json(comment);
+    return res.status(200).json(comment);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return next(errorHandler(500, "Internal server error"));
   }
 };
 
 // Delete a comment
-const deleteComment = async (req, res) => {
+const deleteComment = async (req, res, next) => {
   const { comment_id } = req.params;
   const { user_id } = req.user;
 
   try {
     const comment = await db.Comment.findByPk(comment_id);
     if (!comment) {
-      return res.status(404).json({ message: "Comment not found" });
+      return next(errorHandler(404, "Comment not Found"));
     }
     if (comment.user_id !== user_id) {
-      return res.status(403).json({ message: "Forbidden" });
+      return next(errorHandler(403, "ForBidden"));
     }
 
     await comment.destroy();
-    res.status(204).end();
+    return res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    return next(errorHandler(500, "Internal server error"));
   }
 };
 

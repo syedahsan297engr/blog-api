@@ -23,3 +23,14 @@ checkConnection().then(() => {
     console.log(`Server is running on port ${PORT}`);
   });
 });
+
+//adding the middleware to handle the errors
+app.use((error, req, res, next) => {
+  const statusCode = error.statusCode || 500;
+  const message = error.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    success: false,
+    message,
+    statusCode,
+  });
+});
