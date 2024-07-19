@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken");
+const errorHandler = require("../utils/error.js");
 
 const authenticateJWT = (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1];
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Access denied. No token provided." });
+    return next(errorHandler(401, "Access Denied! You are not authenticated"));
   }
 
   try {
@@ -13,7 +12,7 @@ const authenticateJWT = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (ex) {
-    res.status(400).json({ message: "Invalid token." });
+    return next(errorHandler(403, "Token is not valid"));
   }
   // jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
   //   //verifying the token
