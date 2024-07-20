@@ -98,6 +98,17 @@ const getCommentsByPostId = async (req, res, next) => {
   }
 };
 
+// Utility function to get comments by post ID for use in post.comment.controller.js
+const getCommentsByPostIdData = async (post_id) => {
+  try {
+    const comments = await db.Comment.findAll({ where: { post_id } });
+    const rootComments = buildCommentTree(comments);
+    return extractComments(rootComments);
+  } catch (error) {
+    throw new Error("Internal server error");
+  }
+};
+
 // If a post is deleted, all comments associated with it should be deleted as well or not, in our case we are not deleting the comments, if we want to delete the associated comments, then we can specify this in the post controller in delete post
 
 // Get a single comment by ID
@@ -167,4 +178,5 @@ module.exports = {
   getCommentById,
   updateComment,
   deleteComment,
+  getCommentsByPostIdData,
 };

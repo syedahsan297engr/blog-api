@@ -116,6 +116,10 @@ fetch all posts with comments nested in them....
 fetch all the posts specific to users with comments nested in them....
 Search Posts by title and content, Search comments by this as well. -> the structure should be shown as posts along with comments and comments should include subcomments as well
 
+I will apply searching later -------------------- keep searching simple
+
+Posts with comments done, and user can search for their posts, now searching on title and body next day and then will include the pagination
+
 Make a separate controller and route for this
 
 When this will be implemented then apply pagination.

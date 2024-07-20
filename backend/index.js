@@ -4,6 +4,7 @@ const { checkConnection } = require("./utils/checkConnection");
 const authRoutes = require("./routes/auth.route.js");
 const postRoutes = require("./routes/post.route.js");
 const commentRoutes = require("./routes/comment.route.js");
+const postCommentRoutes = require("./routes/post.comment.route.js");
 
 const app = express();
 const PORT = process.env.PORT;
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoutes);
 app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
+app.use("/posts-comments", postCommentRoutes);
 
 checkConnection().then(() => {
   app.listen(PORT, () => {
