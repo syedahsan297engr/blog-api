@@ -6,6 +6,10 @@ const createComment = async (req, res, next) => {
   const { user_id } = req.user; // Extract user_id from authenticated user
 
   try {
+    const post = await db.Post.findByPk(post_id);
+    if (!post) {
+      return next(errorHandler(404, "Post not Found"));
+    }
     const comment = await db.Comment.create({
       title,
       content,
@@ -24,6 +28,7 @@ const getCommentsByPostId = async (req, res, next) => {
   const { post_id } = req.params;
 
   try {
+    // If a post is deleted, all comments associated with it should be deleted as well or not, in our case we are not deleting the comments, if we want to delete the associated comments, then we can specify this in the post controller in delete post
     const comments = await db.Comment.findAll({ where: { post_id } });
     return res.status(200).json(comments);
   } catch (error) {

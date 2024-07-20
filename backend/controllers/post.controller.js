@@ -5,6 +5,9 @@ const createPost = async (req, res, next) => {
   const { title, content } = req.body;
   const { user_id } = req.user; // Extract user_id from authenticated user
   try {
+    if (!title || !content) {
+      return next(errorHandler(400, "Title and content are required"));
+    }
     const post = await db.Post.create({
       title,
       content,
@@ -69,7 +72,6 @@ const updatePost = async (req, res, next) => {
 const deletePost = async (req, res, next) => {
   const { post_id } = req.params;
   const { user_id } = req.user;
-
   try {
     const post = await db.Post.findByPk(post_id);
     if (!post) {
