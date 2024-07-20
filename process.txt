@@ -72,3 +72,52 @@ git push upstream ahsan-kwanso
 Go to your github account and create a pull request there
 
 Now adding middleware for errors, make sure to first add that in index.js file then use that errorhandler from utils
+
+errorhandler Added, now More customized end points
+
+
+1. A JWT based secure API and is deployed on Heroku.
+2. User registration
+3. User signin
+4. CRUD to create posts. Post will belong to users. 
+5. CRUD to create comments for different posts. Comments will belong to posts.
+6: CURD to create sub-comments for different comments. Sub-comments will belong to comments.
+7. Best coding practices should be followed. Promise.all, async await, ES 6 syntax, error codes, exceptional handling.
+8. Share postman collection of all APIs
+9. Create Readme for project setup or if there are any other instructions.
+
+So these are the requirements
+
+Deployment will be dealt at end, 
+1,2,3 are done
+
+I have add controllers for posts, like create, update, get, delete, update and they are secure as well
+Now one thing is that I have to show comments in posts, but first handle comments like I have to take care of subcomments so that's why, first make use of comments.
+
+For comments I have created create, update, delete, getcomments on posts, getcommentbyid. 
+
+Now what to do next
+
+-> Make some nested comments, then utilize that getComments method as you will get nested comments in there as well
+
+Ok so comments are nested and we got that tree like nested structure.
+
+Now More work is on:
+
+Write CRUD APIs for Blog Posts and comments.
+
+1. List all POSTS. API should support pagination and search. All posts should be publically accessible.
+2. List all comments of a Post. Should support pagination. Includes comments of a comment as well.
+3. List all posts of a user with comments. Implement pagination as well.
+
+Ok First implement logic then I will apply pagination at the end.
+
+fetch all posts with comments nested in them....
+fetch all the posts specific to users with comments nested in them....
+Search Posts by title and content, Search comments by this as well. -> the structure should be shown as posts along with comments and comments should include subcomments as well
+
+Make a separate controller and route for this
+
+When this will be implemented then apply pagination.
+
+After this write readme file as well.

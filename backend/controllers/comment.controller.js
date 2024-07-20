@@ -6,6 +6,11 @@ const createComment = async (req, res, next) => {
   const { user_id } = req.user; // Extract user_id from authenticated user
 
   try {
+    if (!title || !content || !post_id) {
+      return next(
+        errorHandler(400, "Title, content, and post_id are required")
+      );
+    }
     const post = await db.Post.findByPk(post_id);
     if (!post) {
       return next(errorHandler(404, "Post not Found"));
@@ -23,18 +28,77 @@ const createComment = async (req, res, next) => {
   }
 };
 
-// Get all comments for a specific post
+const buildCommentTree = (comments) => {
+  const commentMap = {};
+  comments.forEach((comment) => {
+    commentMap[comment.comment_id] = { ...comment, subComments: [] };
+  });
+
+  const rootComments = [];
+  comments.forEach((comment) => {
+    if (comment.parent_comment_id) {
+      const parentComment = commentMap[comment.parent_comment_id];
+      if (parentComment) {
+        parentComment.subComments.push(commentMap[comment.comment_id]);
+      }
+    } else {
+      rootComments.push(commentMap[comment.comment_id]);
+    }
+  });
+  return rootComments;
+};
+
+const extractComments = (comments) => {
+  return comments.map((comment) => {
+    // Extract the relevant data from `dataValues`
+    const {
+      comment_id,
+      title,
+      content,
+      parent_comment_id,
+      user_id,
+      post_id,
+      createdAt,
+      updatedAt,
+      deletedAt,
+    } = comment.dataValues;
+
+    // Recursively process sub-comments
+    const subComments = extractComments(comment.subComments);
+
+    return {
+      comment_id,
+      title,
+      content,
+      parent_comment_id,
+      user_id,
+      post_id,
+      createdAt,
+      updatedAt,
+      deletedAt,
+      subComments,
+    };
+  });
+};
+
+// Usage in your `getCommentsByPostId` function
 const getCommentsByPostId = async (req, res, next) => {
   const { post_id } = req.params;
 
   try {
-    // If a post is deleted, all comments associated with it should be deleted as well or not, in our case we are not deleting the comments, if we want to delete the associated comments, then we can specify this in the post controller in delete post
+    // Fetch all comments for the post
     const comments = await db.Comment.findAll({ where: { post_id } });
-    return res.status(200).json(comments);
+    // Build the nested structure
+    const rootComments = buildCommentTree(comments);
+    // Extract only the necessary data
+    const filteredComments = extractComments(rootComments);
+    return res.status(200).json(filteredComments);
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }
 };
+
+// If a post is deleted, all comments associated with it should be deleted as well or not, in our case we are not deleting the comments, if we want to delete the associated comments, then we can specify this in the post controller in delete post
 
 // Get a single comment by ID
 const getCommentById = async (req, res, next) => {
