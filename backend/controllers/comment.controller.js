@@ -171,6 +171,28 @@ const deleteComment = async (req, res, next) => {
     return next(errorHandler(500, "Internal server error"));
   }
 };
+// Search comments by title or content
+const searchCommentsByTitleOrContent = async (req, res, next) => {
+  const { title, content } = req.query;
+  try {
+    if (!title && !content) {
+      return next(
+        errorHandler(400, "Title or content query parameter is required")
+      );
+    }
+    const comments = await db.Comment.findAll({
+      where: {
+        [db.Sequelize.Op.or]: [
+          { title: { [db.Sequelize.Op.iLike]: `%${title}%` } },
+          { content: { [db.Sequelize.Op.iLike]: `%${content}%` } },
+        ],
+      },
+    });
+    return res.status(200).json(comments);
+  } catch (error) {
+    return next(errorHandler(500, "Internal server error"));
+  }
+};
 
 module.exports = {
   createComment,
@@ -179,4 +201,5 @@ module.exports = {
   updateComment,
   deleteComment,
   getCommentsByPostIdData,
+  searchCommentsByTitleOrContent,
 };

@@ -6,6 +6,7 @@ const {
   getCommentById,
   updateComment,
   deleteComment,
+  searchCommentsByTitleOrContent,
 } = require("../controllers/comment.controller.js");
 
 const router = express.Router();
@@ -15,5 +16,5 @@ router.get("/post/:post_id", getCommentsByPostId);
 router.get("/:comment_id", getCommentById);
 router.put("/:comment_id", authenticateJWT, updateComment);
 router.delete("/:comment_id", authenticateJWT, deleteComment);
-
+router.get("", searchCommentsByTitleOrContent);
 module.exports = router;

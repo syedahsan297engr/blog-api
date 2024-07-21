@@ -48,7 +48,35 @@ const getPostsByUserWithComments = async (req, res, next) => {
   }
 };
 
+// Utility function to search posts by title or content
+const searchPostsByTitleOrContent = async (req, res, next) => {
+  const { title, content } = req.query;
+  try {
+    if (!title && !content) {
+      return next(
+        errorHandler(400, "Title or content query parameter is required")
+      );
+    }
+    const posts = await db.Post.findAll({
+      where: {
+        [db.Sequelize.Op.or]: [
+          { title: { [db.Sequelize.Op.iLike]: `%${title}%` } },
+          { content: { [db.Sequelize.Op.iLike]: `%${content}%` } },
+        ],
+      },
+    });
+
+    const postsWithComments = await getPostsWithNestedComments(posts);
+
+    return res.status(200).json(postsWithComments);
+  } catch (error) {
+    console.error(error.message);
+    return next(errorHandler(500, "Internal server error"));
+  }
+};
+
 module.exports = {
   getPostsWithComments,
   getPostsByUserWithComments,
+  searchPostsByTitleOrContent,
 };
