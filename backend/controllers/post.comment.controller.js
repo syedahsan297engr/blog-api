@@ -1,6 +1,10 @@
 const db = require("../models/sequelize");
 const { getCommentsByPostIdData } = require("./comment.controller.js");
 const errorHandler = require("../utils/error.js");
+const {
+  validatePagination,
+  generateNextPageUrl,
+} = require("../utils/pagination.js");
 
 const getPostsWithNestedComments = async (posts) => {
   return await Promise.all(
@@ -15,15 +19,56 @@ const getPostsWithNestedComments = async (posts) => {
   );
 };
 
+const formatPaginationResponse = (
+  data,
+  totalItems,
+  pageNumber,
+  pageSize,
+  req
+) => {
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const nextPage = pageNumber < totalPages ? pageNumber + 1 : null;
+  const nextPageUrl = generateNextPageUrl(nextPage, pageSize, req);
+
+  return {
+    total: totalItems,
+    page: pageNumber,
+    pageSize: pageSize,
+    nextPage: nextPageUrl,
+    posts: data,
+  };
+};
+
 // Utility function to get posts with nested comments
 const getPostsWithComments = async (req, res, next) => {
+  const { page = 1, limit = 2 } = req.query; // Default to page 1 and limit 2
   try {
-    const posts = await db.Post.findAll(); // Fetch all posts
+    // Validate pagination
+    const pagination = validatePagination(page, limit);
+
+    // Fetch paginated posts
+    const posts = await db.Post.findAll({
+      limit: pagination.pageSize,
+      offset: (pagination.pageNumber - 1) * pagination.pageSize,
+    });
 
     // Fetch and nest comments for each post
     const postsWithComments = await getPostsWithNestedComments(posts);
 
-    return res.status(200).json(postsWithComments);
+    // Calculate total number of posts
+    const totalPosts = await db.Post.count();
+
+    return res
+      .status(200)
+      .json(
+        formatPaginationResponse(
+          postsWithComments,
+          totalPosts,
+          pagination.pageNumber,
+          pagination.pageSize,
+          req
+        )
+      );
   } catch (error) {
     console.error(error.message); // Optional: log the error message
     return next(errorHandler(500, "Internal server error"));
@@ -33,16 +78,40 @@ const getPostsWithComments = async (req, res, next) => {
 // Utility function to get posts by user with nested comments
 const getPostsByUserWithComments = async (req, res, next) => {
   const { user_id } = req.params;
+  const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
 
   try {
     if (parseInt(user_id) !== req.user.user_id) {
       return next(errorHandler(403, "Forbidden"));
     }
-    // Fetch posts specific to the user
-    const posts = await db.Post.findAll({ where: { user_id } });
+
+    // Validate pagination
+    const pagination = validatePagination(page, limit);
+
+    // Fetch paginated posts specific to the user
+    const posts = await db.Post.findAll({
+      where: { user_id },
+      limit: pagination.pageSize,
+      offset: (pagination.pageNumber - 1) * pagination.pageSize,
+    });
+
     // Fetch and nest comments for each post
     const postsWithComments = await getPostsWithNestedComments(posts);
-    return res.status(200).json(postsWithComments);
+
+    // Calculate total number of posts for the user
+    const totalPosts = await db.Post.count({ where: { user_id } });
+
+    return res
+      .status(200)
+      .json(
+        formatPaginationResponse(
+          postsWithComments,
+          totalPosts,
+          pagination.pageNumber,
+          pagination.pageSize,
+          req
+        )
+      );
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }
@@ -51,13 +120,35 @@ const getPostsByUserWithComments = async (req, res, next) => {
 // Utility function to search posts by title or content
 const searchPostsByTitleOrContent = async (req, res, next) => {
   const { title, content } = req.query;
+  const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+
   try {
     if (!title && !content) {
       return next(
         errorHandler(400, "Title or content query parameter is required")
       );
     }
+
+    // Validate pagination
+    const pagination = validatePagination(page, limit);
+
+    // Fetch paginated posts that match the search criteria
     const posts = await db.Post.findAll({
+      where: {
+        [db.Sequelize.Op.or]: [
+          { title: { [db.Sequelize.Op.iLike]: `%${title}%` } },
+          { content: { [db.Sequelize.Op.iLike]: `%${content}%` } },
+        ],
+      },
+      limit: pagination.pageSize,
+      offset: (pagination.pageNumber - 1) * pagination.pageSize,
+    });
+
+    // Fetch and nest comments for each post
+    const postsWithComments = await getPostsWithNestedComments(posts);
+
+    // Calculate total number of posts matching the search criteria
+    const totalPosts = await db.Post.count({
       where: {
         [db.Sequelize.Op.or]: [
           { title: { [db.Sequelize.Op.iLike]: `%${title}%` } },
@@ -66,11 +157,18 @@ const searchPostsByTitleOrContent = async (req, res, next) => {
       },
     });
 
-    const postsWithComments = await getPostsWithNestedComments(posts);
-
-    return res.status(200).json(postsWithComments);
+    return res
+      .status(200)
+      .json(
+        formatPaginationResponse(
+          postsWithComments,
+          totalPosts,
+          pagination.pageNumber,
+          pagination.pageSize,
+          req
+        )
+      );
   } catch (error) {
-    console.error(error.message);
     return next(errorHandler(500, "Internal server error"));
   }
 };

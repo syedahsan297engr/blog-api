@@ -1,5 +1,9 @@
 const db = require("../models/sequelize.js");
 const errorHandler = require("../utils/error.js");
+const {
+  validatePagination,
+  generateNextPageUrl,
+} = require("../utils/pagination.js");
 // Create a new comment
 const createComment = async (req, res, next) => {
   const { title, content, post_id, parent_comment_id } = req.body;
@@ -84,15 +88,36 @@ const extractComments = (comments) => {
 // Usage in your `getCommentsByPostId` function
 const getCommentsByPostId = async (req, res, next) => {
   const { post_id } = req.params;
-
+  const { page = 1, limit = 2 } = req.query; // Default to page 1 and limit 10
   try {
-    // Fetch all comments for the post
-    const comments = await db.Comment.findAll({ where: { post_id } });
+    // Validate pagination
+    const pagination = validatePagination(page, limit);
+    if (pagination.error) {
+      return next(errorHandler(400, pagination.error));
+    }
+    // Fetch comments with pagination
+    const comments = await db.Comment.findAndCountAll({
+      where: { post_id },
+      limit: pagination.pageSize,
+      offset: (pagination.pageNumber - 1) * pagination.pageSize,
+    });
     // Build the nested structure
-    const rootComments = buildCommentTree(comments);
+    const rootComments = buildCommentTree(comments.rows);
     // Extract only the necessary data
     const filteredComments = extractComments(rootComments);
-    return res.status(200).json(filteredComments);
+    // Calculate nextPage and generate URL
+    const totalPages = Math.ceil(comments.count / pagination.pageSize);
+    const nextPage =
+      pagination.pageNumber < totalPages ? pagination.pageNumber + 1 : null;
+    const nextPageUrl = generateNextPageUrl(nextPage, pagination.pageSize, req);
+
+    return res.status(200).json({
+      total: comments.count,
+      page: pagination.pageNumber,
+      pageSize: pagination.pageSize,
+      nextPage: nextPageUrl,
+      comments: filteredComments,
+    });
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }
@@ -173,22 +198,46 @@ const deleteComment = async (req, res, next) => {
 };
 // Search comments by title or content
 const searchCommentsByTitleOrContent = async (req, res, next) => {
-  const { title, content } = req.query;
+  const { title, content, page = 1, limit = 2 } = req.query;
+
   try {
     if (!title && !content) {
       return next(
         errorHandler(400, "Title or content query parameter is required")
       );
     }
-    const comments = await db.Comment.findAll({
+
+    // Validate pagination
+    const pagination = validatePagination(page, limit);
+    if (pagination.error) {
+      return next(errorHandler(400, pagination.error));
+    }
+
+    // Fetch comments with pagination
+    const comments = await db.Comment.findAndCountAll({
       where: {
         [db.Sequelize.Op.or]: [
           { title: { [db.Sequelize.Op.iLike]: `%${title}%` } },
           { content: { [db.Sequelize.Op.iLike]: `%${content}%` } },
         ],
       },
+      limit: pagination.pageSize,
+      offset: (pagination.pageNumber - 1) * pagination.pageSize,
     });
-    return res.status(200).json(comments);
+
+    // Calculate nextPage and generate URL
+    const totalPages = Math.ceil(comments.count / pagination.pageSize);
+    const nextPage =
+      pagination.pageNumber < totalPages ? pagination.pageNumber + 1 : null;
+    const nextPageUrl = generateNextPageUrl(nextPage, pagination.pageSize, req);
+
+    return res.status(200).json({
+      total: comments.count,
+      page: pagination.pageNumber,
+      pageSize: pagination.pageSize,
+      nextPage: nextPageUrl,
+      comments: comments.rows,
+    });
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }

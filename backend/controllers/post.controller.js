@@ -1,5 +1,9 @@
 const db = require("../models/sequelize");
 const errorHandler = require("../utils/error.js");
+const {
+  validatePagination,
+  generateNextPageUrl,
+} = require("../utils/pagination.js");
 // Create a new post
 const createPost = async (req, res, next) => {
   const { title, content } = req.body;
@@ -19,11 +23,36 @@ const createPost = async (req, res, next) => {
   }
 };
 
-// Get all posts
+// Get all posts with pagination
 const getPosts = async (req, res, next) => {
+  const { page = 1, limit = 2 } = req.query;
+
   try {
-    const posts = await db.Post.findAll();
-    res.status(200).json(posts);
+    // Validate pagination parameters
+    const pagination = validatePagination(page, limit);
+    if (pagination.error) {
+      return next(errorHandler(400, pagination.error));
+    }
+
+    // Fetch posts with pagination
+    const { count, rows } = await db.Post.findAndCountAll({
+      limit: pagination.pageSize,
+      offset: (pagination.pageNumber - 1) * pagination.pageSize,
+    });
+
+    // Calculate pagination details
+    const totalPages = Math.ceil(count / pagination.pageSize);
+    const nextPage =
+      pagination.pageNumber < totalPages ? pagination.pageNumber + 1 : null;
+    const nextPageUrl = generateNextPageUrl(nextPage, pagination.pageSize, req);
+
+    res.status(200).json({
+      total: count,
+      page: pagination.pageNumber,
+      pageSize: pagination.pageSize,
+      nextPage: nextPageUrl,
+      posts: rows,
+    });
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }

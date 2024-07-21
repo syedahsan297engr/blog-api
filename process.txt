@@ -125,3 +125,5 @@ Make a separate controller and route for this
 When this will be implemented then apply pagination.
 
 After this write readme file as well.
+
+Pagination is implemented, now readme file generation then deployment.

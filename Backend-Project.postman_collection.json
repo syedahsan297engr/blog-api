@@ -277,7 +277,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3000/comments/post/:post_id",
+					"raw": "http://localhost:3000/comments/post/:post_id?page=1&limit=a",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -288,10 +288,20 @@
 						"post",
 						":post_id"
 					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "a"
+						}
+					],
 					"variable": [
 						{
 							"key": "post_id",
-							"value": "4"
+							"value": "5"
 						}
 					]
 				}
@@ -398,7 +408,62 @@
 					"variable": [
 						{
 							"key": "user_id",
-							"value": "3"
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "searchCommentByTitleOrContent",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/comments?content=This",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"comments"
+					],
+					"query": [
+						{
+							"key": "content",
+							"value": "This"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "searchPostByTitleOrContent",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/posts-comments/search?title=Development&limit=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"posts-comments",
+						"search"
+					],
+					"query": [
+						{
+							"key": "title",
+							"value": "Development"
+						},
+						{
+							"key": "limit",
+							"value": "1"
 						}
 					]
 				}
@@ -411,7 +476,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJBaHNhbiIsImVtYWlsIjoibS5haHNhbkBrd2Fuc28uY29tIiwiaWF0IjoxNzIxNTAzNzkxLCJleHAiOjE3MjE1MDczOTF9.KB5dWr7FySWseR35B8JI2XNB2lmFOb-90MhKnoTSMdU",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJ1c2VyX25hbWUiOiJBaHNhbiIsImVtYWlsIjoibS5haHNhbkBrd2Fuc28uY29tIiwiaWF0IjoxNzIxNTg1MDcxLCJleHAiOjE3MjE1ODg2NzF9.baVQQjiabQqNRpSYZeN79v_dJe4Jl6sbHMt03nwpYwo",
 				"type": "string"
 			}
 		]
