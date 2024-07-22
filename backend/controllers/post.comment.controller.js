@@ -5,6 +5,7 @@ const {
   validatePagination,
   generateNextPageUrl,
 } = require("../utils/pagination.js");
+const paginationConfig = require("../config/pagination.config.js");
 
 const getPostsWithNestedComments = async (posts) => {
   return await Promise.all(
@@ -41,7 +42,10 @@ const formatPaginationResponse = (
 
 // Utility function to get posts with nested comments
 const getPostsWithComments = async (req, res, next) => {
-  const { page = 1, limit = 2 } = req.query; // Default to page 1 and limit 2
+  const {
+    page = paginationConfig.defaultPage,
+    limit = paginationConfig.defaultLimit,
+  } = req.query;
   try {
     // Validate pagination
     const pagination = validatePagination(page, limit);
@@ -78,7 +82,10 @@ const getPostsWithComments = async (req, res, next) => {
 // Utility function to get posts by user with nested comments
 const getPostsByUserWithComments = async (req, res, next) => {
   const { user_id } = req.params;
-  const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
+  const {
+    page = paginationConfig.defaultPage,
+    limit = paginationConfig.defaultLimit,
+  } = req.query;
 
   try {
     if (parseInt(user_id) !== req.user.user_id) {
@@ -119,9 +126,12 @@ const getPostsByUserWithComments = async (req, res, next) => {
 
 // Utility function to search posts by title or content
 const searchPostsByTitleOrContent = async (req, res, next) => {
-  const { title, content } = req.query;
-  const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit 10
-
+  const {
+    title,
+    content,
+    page = paginationConfig.defaultPage,
+    limit = paginationConfig.defaultLimit,
+  } = req.query;
   try {
     if (!title && !content) {
       return next(

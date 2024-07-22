@@ -68,6 +68,7 @@ git remote -v
 
 git fetch upstream
 git push upstream ahsan-kwanso
+git push origin ahsan-kwanso
 
 Go to your github account and create a pull request there
 

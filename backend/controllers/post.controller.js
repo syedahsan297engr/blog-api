@@ -4,6 +4,8 @@ const {
   validatePagination,
   generateNextPageUrl,
 } = require("../utils/pagination.js");
+const paginationConfig = require("../config/pagination.config.js");
+
 // Create a new post
 const createPost = async (req, res, next) => {
   const { title, content } = req.body;
@@ -25,7 +27,10 @@ const createPost = async (req, res, next) => {
 
 // Get all posts with pagination
 const getPosts = async (req, res, next) => {
-  const { page = 1, limit = 2 } = req.query;
+  const {
+    page = paginationConfig.defaultPage,
+    limit = paginationConfig.defaultLimit,
+  } = req.query;
 
   try {
     // Validate pagination parameters
@@ -111,7 +116,7 @@ const deletePost = async (req, res, next) => {
     }
 
     await post.destroy();
-    return res.status(204).end();
+    return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }
