@@ -4,6 +4,8 @@ const {
   validatePagination,
   generateNextPageUrl,
 } = require("../utils/pagination.js");
+const paginationConfig = require("../config/pagination.config.js");
+
 // Create a new comment
 const createComment = async (req, res, next) => {
   const { title, content, post_id, parent_comment_id } = req.body;
@@ -88,7 +90,10 @@ const extractComments = (comments) => {
 // Usage in your `getCommentsByPostId` function
 const getCommentsByPostId = async (req, res, next) => {
   const { post_id } = req.params;
-  const { page = 1, limit = 2 } = req.query; // Default to page 1 and limit 10
+  const {
+    page = paginationConfig.defaultPage,
+    limit = paginationConfig.defaultLimit,
+  } = req.query;
   try {
     // Validate pagination
     const pagination = validatePagination(page, limit);
@@ -191,14 +196,20 @@ const deleteComment = async (req, res, next) => {
     }
 
     await comment.destroy();
-    return res.status(204).end();
+    return res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
     return next(errorHandler(500, "Internal server error"));
   }
 };
+
 // Search comments by title or content
 const searchCommentsByTitleOrContent = async (req, res, next) => {
-  const { title, content, page = 1, limit = 2 } = req.query;
+  const {
+    title,
+    content,
+    page = paginationConfig.defaultPage,
+    limit = paginationConfig.defaultLimit,
+  } = req.query;
 
   try {
     if (!title && !content) {
