@@ -49,7 +49,9 @@ const getPostsWithComments = async (req, res, next) => {
   try {
     // Validate pagination
     const pagination = validatePagination(page, limit);
-
+    if (pagination.error) {
+      return next(errorHandler(400, pagination.error));
+    }
     // Fetch paginated posts
     const posts = await db.Post.findAll({
       limit: pagination.pageSize,
@@ -94,7 +96,9 @@ const getPostsByUserWithComments = async (req, res, next) => {
 
     // Validate pagination
     const pagination = validatePagination(page, limit);
-
+    if (pagination.error) {
+      return next(errorHandler(400, pagination.error));
+    }
     // Fetch paginated posts specific to the user
     const posts = await db.Post.findAll({
       where: { user_id },
@@ -141,7 +145,9 @@ const searchPostsByTitleOrContent = async (req, res, next) => {
 
     // Validate pagination
     const pagination = validatePagination(page, limit);
-
+    if (pagination.error) {
+      return next(errorHandler(400, pagination.error));
+    }
     // Fetch paginated posts that match the search criteria
     const posts = await db.Post.findAll({
       where: {
@@ -158,14 +164,7 @@ const searchPostsByTitleOrContent = async (req, res, next) => {
     const postsWithComments = await getPostsWithNestedComments(posts);
 
     // Calculate total number of posts matching the search criteria
-    const totalPosts = await db.Post.count({
-      where: {
-        [db.Sequelize.Op.or]: [
-          { title: { [db.Sequelize.Op.iLike]: `%${title}%` } },
-          { content: { [db.Sequelize.Op.iLike]: `%${content}%` } },
-        ],
-      },
-    });
+    const totalPosts = posts.length;
 
     return res
       .status(200)

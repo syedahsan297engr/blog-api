@@ -12,9 +12,9 @@ const {
 const router = express.Router();
 
 router.post("/", authenticateJWT, createComment);
-router.get("/post/:post_id", getCommentsByPostId);
-router.get("/:comment_id", getCommentById);
+router.get("/post/:post_id", authenticateJWT, getCommentsByPostId);
+router.get("/:comment_id", authenticateJWT, getCommentById);
 router.put("/:comment_id", authenticateJWT, updateComment);
 router.delete("/:comment_id", authenticateJWT, deleteComment);
-router.get("", searchCommentsByTitleOrContent);
+router.get("", authenticateJWT, searchCommentsByTitleOrContent);
 module.exports = router;

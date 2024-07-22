@@ -100,6 +100,10 @@ const getCommentsByPostId = async (req, res, next) => {
     if (pagination.error) {
       return next(errorHandler(400, pagination.error));
     }
+    const post = await db.Post.findByPk(post_id);
+    if (!post) {
+      return next(errorHandler(404, "Post not Found"));
+    }
     // Fetch comments with pagination
     const comments = await db.Comment.findAndCountAll({
       where: { post_id },
@@ -138,8 +142,6 @@ const getCommentsByPostIdData = async (post_id) => {
     throw new Error("Internal server error");
   }
 };
-
-// If a post is deleted, all comments associated with it should be deleted as well or not, in our case we are not deleting the comments, if we want to delete the associated comments, then we can specify this in the post controller in delete post
 
 // Get a single comment by ID
 const getCommentById = async (req, res, next) => {

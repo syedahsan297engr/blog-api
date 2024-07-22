@@ -114,7 +114,7 @@ const deletePost = async (req, res, next) => {
     if (post.user_id !== user_id) {
       return next(errorHandler(403, "ForBidden"));
     }
-
+    await db.Comment.destroy({ where: { post_id: post } });
     await post.destroy();
     return res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {

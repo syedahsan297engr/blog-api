@@ -35,6 +35,7 @@ module.exports = {
           model: "Post",
           key: "post_id",
         },
+        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,

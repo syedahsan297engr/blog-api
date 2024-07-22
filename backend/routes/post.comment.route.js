@@ -9,10 +9,10 @@ const {
 const router = express.Router();
 
 // Route to get all posts with nested comments
-router.get("/", getPostsWithComments);
+router.get("/", authenticateJWT, getPostsWithComments);
 
 // Route to get posts by user with nested comments
 router.get("/user/:user_id", authenticateJWT, getPostsByUserWithComments);
-router.get("/search", searchPostsByTitleOrContent);
+router.get("/search", authenticateJWT, searchPostsByTitleOrContent);
 
 module.exports = router;
