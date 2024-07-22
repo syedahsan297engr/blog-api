@@ -17,11 +17,11 @@ npx sequelize-cli migration:generate --name create-users
 npx sequelize-cli migration:generate --name create-posts
 npx sequelize-cli migration:generate --name create-comments
 
-I will test these migrations on kwanso laptop, also I have to add controllers and routes logic here as well, along with authentication, I will refer to mern-auth project
+I will test these migrations on laptop, also I have to add controllers and routes logic here as well, along with authentication, I will refer to mern-auth project
 
 Now let's think about migrations
 
-created migration, test them in kwanso laptop using 
+created migration, test them in laptop using 
 npx sequelize-cli db:migrate
 
 Changes db.config.js for migration purposes
@@ -40,13 +40,6 @@ Ok so migration is working fine, now change your configurations to actual db
 
 Now I will make controllers and routes also add authentication
 
-pull request process
-cd repository-name
-git checkout -b your-branch-name
-git add .
-git commit -m "Description of the changes you made"
-git push origin your-branch-name
-
 Make a separate authentication and error handling logic in utils section
 Then middleware and other work, today work on authentication and jwt.
 
@@ -62,13 +55,6 @@ Implementation of Comments Working fine
 This was the basic CRUD just to check jwt working, will add according to the application later.
 
 Also make a readme file as well
-
-How to create a fork
-git remote -v
-
-git fetch upstream
-git push upstream ahsan-kwanso
-git push origin ahsan-kwanso
 
 Go to your github account and create a pull request there
 
@@ -128,3 +114,14 @@ When this will be implemented then apply pagination.
 After this write readme file as well.
 
 Pagination is implemented, now readme file generation then deployment.
+
+git add .
+git commit -m "msg"
+git fetch upstream
+git branch
+-> check branch and switch to main in this case
+git checkout main
+git remote -v
+git push origin main
+
+Then go to github you will see the msg you're one commit ahead then create a pull request
