@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      paranoid: true,
+      //paranoid: true,
       freezeTableName: true,
       modelName: "User",
     }

@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       Post.belongsTo(models.User, {
         foreignKey: "user_id",
       });
+      Post.hasMany(models.Comment, {
+        foreignKey: "post_id",
+        onDelete: "CASCADE",
+      });
     }
   }
 
@@ -36,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      paranoid: true,
+      //paranoid: true,
       freezeTableName: true,
       modelName: "Post",
     }

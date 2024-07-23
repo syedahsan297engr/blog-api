@@ -9,6 +9,16 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "post_id",
         onDelete: "CASCADE",
       });
+      Comment.belongsTo(models.Comment, {
+        foreignKey: "parent_comment_id",
+        as: "ParentComment",
+        onDelete: "CASCADE",
+      });
+      Comment.hasMany(models.Comment, {
+        foreignKey: "parent_comment_id",
+        as: "ChildComments",
+        onDelete: "CASCADE",
+      });
     }
   }
 
@@ -30,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       parent_comment_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
+        references: {
+          model: "Comment",
+          key: "comment_id",
+        },
       },
       user_id: {
         type: DataTypes.INTEGER,
@@ -50,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      paranoid: true,
+      //paranoid: true, //you have to add deletedAt table in migrations to get this working
       freezeTableName: true,
       modelName: "Comment",
     }

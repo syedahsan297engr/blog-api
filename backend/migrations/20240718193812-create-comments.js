@@ -19,6 +19,11 @@ module.exports = {
       parent_comment_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
+        references: {
+          model: "Comment",
+          key: "comment_id",
+        },
+        onDelete: "CASCADE",
       },
       user_id: {
         type: Sequelize.INTEGER,
@@ -43,9 +48,6 @@ module.exports = {
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
-      deletedAt: {
         type: Sequelize.DATE,
       },
     });
