@@ -11,8 +11,8 @@ const {
 const router = express.Router();
 
 router.post("/", authenticateJWT, createPost);
-router.get("/", getPosts);
-router.get("/:post_id", getPostById);
+router.get("/", authenticateJWT, getPosts);
+router.get("/:post_id", authenticateJWT, getPostById);
 router.put("/:post_id", authenticateJWT, updatePost);
 router.delete("/:post_id", authenticateJWT, deletePost);
 

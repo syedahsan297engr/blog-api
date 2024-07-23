@@ -125,3 +125,40 @@ git remote -v
 git push origin main
 
 Then go to github you will see the msg you're one commit ahead then create a pull request
+
+
+"use strict";
+
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    // Correctly identify the constraint name
+    await queryInterface.removeConstraint("Comment", "Comment_post_id_fkey");
+    await queryInterface.addConstraint("Comment", {
+      fields: ["post_id"],
+      type: "foreign key",
+      name: "Comment_post_id_fkey",
+      references: {
+        table: "Post",  // Ensure this matches your table name in the database
+        field: "post_id",
+      },
+      onDelete: "CASCADE",
+    });
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeConstraint("Comment", "Comment_post_id_fkey");
+    await queryInterface.addConstraint("Comment", {
+      fields: ["post_id"],
+      type: "foreign key",
+      name: "Comment_post_id_fkey",
+      references: {
+        table: "Post",  // Ensure this matches your table name in the database
+        field: "post_id",
+      },
+      onDelete: "NO ACTION",
+    });
+  },
+};
+
+
+sample for adding some more features to db through migration. like enabling cascade delete

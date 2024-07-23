@@ -12,7 +12,7 @@ const PORT = process.env.PORT;
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("Server Started!");
 });
 
 app.use("/auth", authRoutes);
@@ -22,7 +22,9 @@ app.use("/posts-comments", postCommentRoutes);
 
 checkConnection().then(() => {
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(
+      `Server is running on port ${PORT} and Database Connected Successfully`
+    );
   });
 });
 
