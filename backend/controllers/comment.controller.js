@@ -21,6 +21,12 @@ const createComment = async (req, res, next) => {
     if (!post) {
       return next(errorHandler(404, "Post not Found"));
     }
+    if (parent_comment_id) {
+      const parentComment = await db.Comment.findByPk(parent_comment_id);
+      if (!parentComment) {
+        return next(errorHandler(404, "This comment is deleted"));
+      }
+    }
     const comment = await db.Comment.create({
       title,
       content,
@@ -196,9 +202,9 @@ const deleteComment = async (req, res, next) => {
     if (comment.user_id !== user_id) {
       return next(errorHandler(403, "ForBidden"));
     }
-    await db.Comment.destroy({
-      where: { parent_comment_id: comment_id },
-    });
+    // await db.Comment.destroy({
+    //   where: { parent_comment_id: comment_id },
+    // });
     await comment.destroy();
     return res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
