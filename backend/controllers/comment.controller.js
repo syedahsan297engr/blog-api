@@ -196,7 +196,9 @@ const deleteComment = async (req, res, next) => {
     if (comment.user_id !== user_id) {
       return next(errorHandler(403, "ForBidden"));
     }
-
+    await db.Comment.destroy({
+      where: { parent_comment_id: comment_id },
+    });
     await comment.destroy();
     return res.status(200).json({ message: "Comment deleted successfully" });
   } catch (error) {
