@@ -162,3 +162,14 @@ module.exports = {
 
 
 sample for adding some more features to db through migration. like enabling cascade delete
+
+Handle deleting parent comments, tomorrow
+
+Now this is the version with paranoid = true so cascading will not work here, now let's do with paranoid false.
+
+npx sequelize-cli migration:generate --name remove-deletedAt-from-comment-and-post
+
+created new migrations for cascade and deleting some attributes
+
+This version is with cascade
+previous version was with paranoid true, so no cascade, and also i have edited migrations file deleting deleteAt column
